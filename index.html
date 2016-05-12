@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script>
+        function seperateWords(str){
+            strArray = str.toLowerCase();
+            strArray = strArray.split(" ");
+            for(x=0;x<strArray.length;x++){
+                    //Strip punctuation
+                    strArray[x] = strArray[x].replace(/[.,\/#?!$%\^&\*;:{}=\-_`~()]/g,"");
+                }
+            return strArray;
+        }
+        function makePresentable(arr){
+            //Array -> String
+            str = arr.join(" ");
+            //Capitalizes first letter
+            str = str.charAt(0).toUpperCase() + str.slice(1);
+            //Capitalizes all Is
+            str = str.replace(" i", " I");
+            str = str.replace("i ", "I ");
+            return str;
+        }
+        
+        $( document ).ready(function() {
+            $.getJSON("json.json", function(json) {
+                for(i=0; i< json.sentences.length; i++){
+                    appendString = "<tr>";
+                    //Print out original
+                    appendString += "<td>" + json.sentences[i] + "</td>";
+                    temp = "";
+                    //Cleans up for sorting
+                    strArray = seperateWords(json.sentences[i]);
+                    //Alphabetical
+                    temp = strArray.sort();
+                    temp = makePresentable(temp);
+                    appendString += "<td>" + temp + "</td>";
+                    //Reverse
+                    strArray = seperateWords(json.sentences[i]);
+                    temp = strArray.reverse();
+                    temp = makePresentable(temp);
+                    appendString += "<td>" + temp + "</td>";
+                    //Progressive
+                    strArray = seperateWords(json.sentences[i]);
+                    temp = strArray.sort(function(a, b) {
+                      return a.length - b.length || // sort by length, if equal then
+                      a.localeCompare(b);    // sort by dictionary order
+                    });
+                    temp = makePresentable(temp);
+                    appendString += "<td>" + temp + "</td>";
+                    appendString += "</tr>";
+
+                    $( "#displayTable" ).append(appendString);
+
+
+                }
+            });
+        });
+        
+    </script>
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 5px;
+    }
+    </style>
+</head>
+<body>
+
+<table style="width:100%" id="displayTable">
+  <tr>
+    <th>Sentence</th>
+    <th>Alphabetical</th>		
+    <th>Reverse</th>
+    <th>Progressive</th>
+  </tr>
+</table>
+
+</body>
+</html>
